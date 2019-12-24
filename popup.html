@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 250px;
+            margin: 0;
+            padding: 6px 6px 12px;
+        }
+
+        div {
+            position: relative;
+        }
+
+        h4 {
+            margin: 0;
+            margin-bottom: 6px;
+            font-size: 16px;
+        }
+
+        p {
+            line-height: 1;
+            margin: 0;
+            font-size: 12px;
+            margin-bottom: 6px;
+        }
+
+        ul {
+            padding: 0;
+            margin: 0;
+        }
+
+        li {
+            list-style-type: none;
+        }
+
+        #cpu-bars-container,
+        #cpu-usage-text-container {
+            display: flex;
+            position: relative;
+        }
+
+        #memoryDisplay {
+            width: 100%;
+            height: 10px;
+            outline: 1px solid gray;
+            display: block;
+            position: relative;
+            margin-bottom: 6px;
+            ;
+        }
+
+        #usedMemoryBar {
+            background-color: tomato;
+            position: absolute;
+            left: 0;
+            height: 100%;
+            transition: .35s all ease-out;
+        }
+
+        .bar-container {
+            height: 60px;
+            flex: 1 1 auto;
+            margin: 0 4px 0 0;
+            border: 1px solid gray;
+            position: relative;
+            background: #ffffff;
+        }
+
+        .cpu-usage-bar {
+            width: 100%;
+            background-color: teal;
+            position: absolute;
+            bottom: 0;
+            transition: .25s all ease-out;
+            color: white;
+            text-align: center;
+        }
+
+        .cpu-usage-text {
+            font-weight: bold;
+            text-align: center;
+            flex: 1 1 auto;
+        }
+
+        .tab {
+            width: 100%;
+            padding-bottom: 2px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            display: inline-block;
+            cursor: pointer;
+            transition: .25s all ease-out;
+            height: 18px;
+        }
+
+        .currTab {
+            border-bottom: 2px solid black;
+            margin-bottom: 6px;
+            font-weight: bold;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        li.tab:hover>.kill-btn {
+            opacity: 1;
+            width: 20px;
+        }
+
+        .kill-btn {
+            opacity: 0;
+            width: 0px;
+            height: 20px;
+            background-color: gray;
+            color: white;
+            cursor: pointer;
+            position: absolute;
+            right: 2px;
+            text-align: center;
+            transition: .3s all ease-out;
+            z-index: 1;
+        }
+
+        .kill-btn:hover {
+            background-color: red;
+            border-radius: 42%;
+        }
+
+        .remove {
+            opacity: 0;
+            width: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h4>CPU</h4>
+    <p id="cpuMmodel"></p>
+    <p id="numCores"></p>
+
+    <div id="cpu-bars-container"></div>
+    <div id="cpu-usage-text-container"></div>
+
+    <h4>Memory</h4>
+    <p id="totalMem"></p>
+    <p id="freeMem"></p>
+    <p id="usedMem"></p>
+
+    <div id="memoryDisplay">
+        <div id="usedMemoryBar"></div>
+    </div>
+
+    <ul id="tabList"></ul>
+
+
+    <div style="display:none">
+        Icons made by <a href="https://www.flaticon.com/authors/srip" title="srip">srip</a>
+        from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
+    </div>
+    <script src="popup.js"></script>
+</body>
+
+</html>
