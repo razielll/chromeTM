@@ -23,6 +23,10 @@
             font-size: 16px;
         }
 
+        h4 img {
+            margin-right: 6px;
+        }
+
         p {
             line-height: 1;
             margin: 0;
@@ -39,23 +43,34 @@
             list-style-type: none;
         }
 
-        #cpu-bars-container,
-        #cpu-usage-text-container {
+        .flex {
+            display: flex;
+        }
+
+        .align-center {
+            align-items: center;
+        }
+
+        .cpu-bars-container,
+        .cpu-usage-text-container {
             display: flex;
             position: relative;
         }
 
-        #memoryDisplay {
+        .cpu-usage-text-container {
+            margin-bottom: 6px;
+        }
+
+        .memoryDisplay {
             width: 100%;
             height: 10px;
             outline: 1px solid gray;
             display: block;
             position: relative;
             margin-bottom: 6px;
-            ;
         }
 
-        #usedMemoryBar {
+        .usedMemoryBar {
             background-color: tomato;
             position: absolute;
             left: 0;
@@ -68,7 +83,6 @@
             flex: 1 1 auto;
             margin: 0 4px 0 0;
             border: 1px solid gray;
-            position: relative;
             background: #ffffff;
         }
 
@@ -79,7 +93,10 @@
             bottom: 0;
             transition: .25s all ease-out;
             color: white;
-            text-align: center;
+
+            box-shadow: 0 5px 5px -5px #999 inset;
+            background-image: linear-gradient(to top, #8bcf69 0px, yellow 22px, red 52px);
+            background-size: 100% 100%;
         }
 
         .cpu-usage-text {
@@ -142,23 +159,24 @@
 
 <body>
 
-    <h4>CPU</h4>
-    <p id="cpuMmodel"></p>
-    <p id="numCores"></p>
+    <h4 class="flex align-center"><img height="18"
+             src="https://cdn.pixabay.com/photo/2013/07/12/17/56/cpu-152656_960_720.png" alt="cpu"> CPU</h4>
+    <p class="cpu-model"></p>
 
-    <div id="cpu-bars-container"></div>
-    <div id="cpu-usage-text-container"></div>
+    <div class="cpu-bars-container"></div>
+    <div class="cpu-usage-text-container"></div>
 
-    <h4>Memory</h4>
-    <p id="totalMem"></p>
-    <p id="freeMem"></p>
-    <p id="usedMem"></p>
+    <h4 class="flex align-center"><img height="18"
+             src="https://cdn.pixabay.com/photo/2013/07/12/17/56/ram-152655_960_720.png" alt="ram">RAM Memory</h4>
+    <p class="totalMem"></p>
+    <p class="freeMem"></p>
+    <p class="usedMem"></p>
 
-    <div id="memoryDisplay">
-        <div id="usedMemoryBar"></div>
+    <div class="memoryDisplay">
+        <div class="usedMemoryBar"></div>
     </div>
 
-    <ul id="tabList"></ul>
+    <ul class="tabList"></ul>
 
 
     <div style="display:none">

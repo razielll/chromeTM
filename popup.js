@@ -1,103 +1,112 @@
 'use strict'
+console.log('%c Welcome :)', 'background: #222; color: #32cd32; padding: 1rem; font-size: 24px; font-weight: bold');
 
-const cpuMmodel = document.getElementById('cpuMmodel');
-const numCores = document.getElementById('numCores');
-const cpuBarsContainer = document.getElementById('cpu-bars-container');
-const cpuUsageTextContainer = document.getElementById('cpu-usage-text-container');
+//#region cpuElements
+const cpuMmodel = document.querySelector('.cpu-model');
+const cpuBarsContainer = document.querySelector('.cpu-bars-container');
+const cpuUsageTextContainer = document.querySelector('.cpu-usage-text-container');
+//#endregion
 
-const totalMem = document.getElementById('totalMem');
-const freeMem = document.getElementById('freeMem');
-const usedMem = document.getElementById('usedMem');
-const usedMemoryBar = document.getElementById('usedMemoryBar');
+//#region memoryElements
+const totalMem = document.querySelector('.totalMem');
+const freeMem = document.querySelector('.freeMem');
+const usedMem = document.querySelector('.usedMem');
+const usedMemoryBar = document.querySelector('.usedMemoryBar');
+//#endregion
 
-const tabListEl = document.getElementById('tabList');
+//#region tabElements
+const tabListEl = document.querySelector('.tabList');
 const currTab = document.querySelector('.currTab');
-
+//#endregion
 
 let isFirstRun = true;
 
-const getCpuUsage = () => {
-  chrome.storage.local.get('cpu', (data) => {
-    const { modelName, numOfProcessors, archName, features } = data.cpu;
-    cpuMmodel.innerHTML = modelName;
-    numCores.innerHTML = numOfProcessors + ' Cores'
-  })
+
+
+
+const renderCPU = () => {
+  if (isFirstRun) {
+    initCPURender();
+    isFirstRun = false;
+    return 0;
+  };
+  updateCores();
 };
 
-const getCoresUsage = () => {
-  if (isFirstRun) init();
-  else updateCoreUsage();
-};
+const updateCores = () => {
+  console.log('ran update cores');
 
-const updateCoreUsage = () => {
-  const cpuUsageBars = document.querySelectorAll('.cpu-usage-bar')
-  chrome.storage.local.get('cpu', (data) => {
+  const barNodes = document.querySelectorAll('.cpu-usage-bar');
+  const txtNodes = document.querySelectorAll('.cpu-usage-text');
+
+  chrome.storage.local.get('cpu', function (data) {
     try {
       const { processors } = data.cpu;
-      cpuUsageBars.forEach((usageBar, i) => {
-        const { usage } = processors[i];
+      processors.forEach((core, i) => {
+        const { usage } = core;
         const { idle, kernel, user, total } = usage;
         const coreUsage = (kernel + user) / total * 100;
-        // console.log('core usage', coreUsage);
-        usageBar.style.height = Math.round(coreUsage) + '%';
+        barNodes[i].style.height = coreUsage.toFixed(2) + '%';
+        txtNodes[i].textContent = Math.round(coreUsage) + '%';
       })
     } catch (e) { console.log('e', e) }
-  })
-}
+  });
+  return 0;
+};
 
-function init() {
-  chrome.storage.local.get('cpu', (data) => {
+const initCPURender = () => {
+  chrome.storage.local.get('cpu', function (data) {
     try {
-      const { processors } = data.cpu;
+      const { processors, modelName } = data.cpu;
+      // Render CPU model
+      cpuMmodel.textContent = modelName;
+
+      // Create elements for each core and get initial data
       processors.forEach((core) => {
-        const barContainerEl = document.createElement('div');
-        barContainerEl.classList.add('bar-container')
+        const cpuUsageContainerEl = document.createElement('div');
+        const cpuUsageBarEl = document.createElement('div');
+        const cpuUsageTxtEl = document.createElement('div');
+
+        cpuUsageContainerEl.classList.add('bar-container')
+        cpuUsageBarEl.classList.add('cpu-usage-bar');
+        cpuUsageTxtEl.classList.add('cpu-usage-text');
 
         const { usage } = core;
         const { idle, kernel, user, total } = usage;
-
         const coreUsage = (kernel + user) / total * 100;
 
-        const cpuUsageBar = createCpuUageBar(coreUsage);
-        const cpuUsageTxt = createCpuUsageText(coreUsage);
+        cpuUsageBarEl.style.height = coreUsage.toFixed(2) + '%';
+        cpuUsageTxtEl.textContent = Math.round(coreUsage) + '%';
 
-        barContainerEl.appendChild(cpuUsageBar);
-        cpuUsageTextContainer.appendChild(cpuUsageTxt);
+        cpuUsageContainerEl.appendChild(cpuUsageBarEl);
+        cpuUsageTextContainer.appendChild(cpuUsageTxtEl);
 
-        cpuBarsContainer.appendChild(barContainerEl);
+        cpuBarsContainer.appendChild(cpuUsageContainerEl);
       })
     } catch (e) { console.log('e', e) }
   })
-  isFirstRun = false;
-}
-
-
-const createCpuUageBar = (coreUsage) => {
-  const cpuUsageBarEl = document.createElement('div');
-  cpuUsageBarEl.classList.add('cpu-usage-bar');
-  cpuUsageBarEl.style.height = Math.round(coreUsage) + '%';
-  return cpuUsageBarEl;
+  return 0;
 };
 
-const createCpuUsageText = (coreUsage) => {
-  const cpuUsageTxtEl = document.createElement('div');
-  cpuUsageTxtEl.classList.add('cpu-usage-text');
-  cpuUsageTxtEl.innerHTML = Math.round(coreUsage) + '%';
-  return cpuUsageTxtEl;
+const createKillBtn = (id) => {
+  const spanEl = document.createElement('span');
+  spanEl.classList.add('kill-btn');
+  spanEl.setAttribute('value', id);
+  spanEl.innerHTML = '&#x292C';
+
+  spanEl.onclick = (ev) => {
+    ev.stopPropagation();
+
+    const parentEl = document.querySelector(`li[value='${Number(id)}']`);
+    parentEl.classList.add('remove');
+
+    chrome.tabs.remove(Number(id), () => setTimeout(() => parentEl.remove(), 260));
+  };
+
+  return spanEl;
 };
 
-const renderCurrTab = () => {
-  return chrome.tabs.query({ active: true }, tab => {
-    const currTab = document.createElement('li');
-    const { title, id } = tab[0];
-    currTab.classList.add('tab', 'currTab');
-    currTab.setAttribute('title', title)
-    currTab.textContent = `${title}`
-    tabListEl.append(currTab);
-  });
-};
-
-const createTab = (data) => {
+const generateTab = (data) => {
   const { title, id } = data;
   const tabEl = document.createElement('li');
   tabEl.classList.add('tab');
@@ -108,48 +117,40 @@ const createTab = (data) => {
   tabEl.onclick = () => chrome.tabs.update(id, { highlighted: true, active: true });
 
   const killBtnEl = createKillBtn(id);
+
   tabEl.appendChild(killBtnEl);
 
-  return tabEl;
+  tabListEl.appendChild(tabEl);
+};
+
+const renderInactiveTabs = () => {
+
+
 }
 
-const createKillBtn = (id) => {
-  const killBtnEl = document.createElement('span');
-  killBtnEl.classList.add('kill-btn');
-  killBtnEl.setAttribute('value', id);
-  killBtnEl.innerHTML = '&#x292C';
+const renderTabs = () => {
+  // Render current tab
+  chrome.tabs.query({ active: true }, tab => {
+    const liEl = document.createElement('li');
+    const { title, id } = tab[0];
+    liEl.classList.add('tab', 'currTab');
+    liEl.setAttribute('title', title)
+    liEl.textContent = `${title}`
+    tabListEl.append(liEl);
+  });
 
-  killBtnEl.onclick = (ev) => {
-    ev.stopPropagation();
-
-    const parentEl = document.querySelector(`li[value='${Number(id)}']`);
-    parentEl.classList.add('remove');
-
-    chrome.tabs.remove(Number(id), () => setTimeout(() => parentEl.remove(), 260));
-  };
-
-  return killBtnEl;
+  // Render other tabs
+  chrome.tabs.query({ active: false }, tabs => {
+    for (let i = tabs.length - 1; i >= 0; i--) {
+      generateTab(tabs[i]);
+    };
+  });
 };
 
-const generateInactiveTab = (data) => {
-  const tabEl = createTab(data)
-  tabListEl.appendChild(tabEl);
-  return 0;
-};
 
-const renderInactiveTabs = () => chrome.tabs.query({ active: false }, tabs => {
-  // console.log('Total inactive tabs:', tabs.length);
-  // this is used to render the list from the LAST item first, so most recent item is shown on top
-  for (let i = tabs.length - 1; i >= 0; i--) generateInactiveTab(tabs[i]);
-});
 
-const getTabList = () => {
-  renderCurrTab();
-  renderInactiveTabs();
-  return 0;
-};
 
-const getMemoryUsage = () => {
+const renderMemory = () => {
   chrome.storage.local.get('memory', function (data) {
     const { availableCapacity, capacity } = data.memory;
 
@@ -168,22 +169,15 @@ const getMemoryUsage = () => {
     usedMemoryBar.style.width = Math.round(usedMemPercentage * 100) + '%';
     usedMemoryBar.style.opacity = Math.round(100 - usedMemPercentage);
   });
+  return 0;
 };
 
 
-getCpuUsage()
-getMemoryUsage()
-getCoresUsage()
-getTabList();
-setInterval(getMemoryUsage, 10000);
-setInterval(getCoresUsage, 10000);
-
-
-
-
-
-
-
+renderCPU();
+renderMemory();
+renderTabs();
+setInterval(renderMemory, 10000);
+setInterval(renderCPU, 10000)
 
 
 function formatBytes(bytes, decimals = 2) {

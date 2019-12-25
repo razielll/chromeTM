@@ -1,14 +1,13 @@
 {
   "name": "ChromeTM",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Ssystem monitor and task manager for chrome",
   "permissions": [
     "storage",
     "system.cpu",
     "system.memory",
     "activeTab",
-    "tabs",
-    "declarativeContent"
+    "tabs"
   ],
   "background": {
     "scripts": [
