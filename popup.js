@@ -21,9 +21,6 @@ const currTab = document.querySelector('.currTab');
 
 let isFirstRun = true;
 
-
-
-
 const renderCPU = () => {
   if (isFirstRun) {
     initCPURender();
@@ -122,11 +119,6 @@ const generateTab = (data) => {
 
   tabListEl.appendChild(tabEl);
 };
-
-const renderInactiveTabs = () => {
-
-
-}
 
 const renderTabs = () => {
   // Render current tab

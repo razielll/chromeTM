@@ -1,13 +1,14 @@
 {
   "name": "ChromeTM",
   "version": "1.0.1",
-  "description": "Ssystem monitor and task manager for chrome",
+  "description": "Chrome Task and Tab manager",
   "permissions": [
     "storage",
     "system.cpu",
     "system.memory",
     "activeTab",
-    "tabs"
+    "tabs",
+    "declarativeContent"
   ],
   "background": {
     "scripts": [
@@ -15,7 +16,6 @@
     ],
     "persistent": false
   },
-  "options_page": "options.html",
   "page_action": {
     "default_popup": "popup.html",
     "default_icon": {
